@@ -10,8 +10,6 @@ import SwiftUI
 struct HealthBarView: View {
     let width: CGFloat
     let height: CGFloat
-    // Сделать так, чтобы полоска хп healthBarWidth была 100 % и каждое попадание метеорита отнимало 10 % от нее.
-    // @Binding для обновления в реальном времени?
     let healthBarWidth: CGFloat
     
     var body: some View {
@@ -24,6 +22,7 @@ struct HealthBarView: View {
                     .foregroundStyle(.pink)
                     .opacity(0.8)
                     .offset(x: 61)
+                    .animation(.easeInOut(duration: 0.3), value: healthBarWidth)
             }
     }
 }

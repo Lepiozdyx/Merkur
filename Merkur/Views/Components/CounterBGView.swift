@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CounterBGView: View {
-    let text: String // @Binding ?
+    let text: String
     let width: CGFloat
     let height: CGFloat
     
@@ -21,6 +21,7 @@ struct CounterBGView: View {
                     .mFont(18)
                     .multilineTextAlignment(.center)
                     .offset(x: 20)
+                    .animation(.bouncy, value: text)
             }
     }
 }
