@@ -54,7 +54,7 @@ final class GameStateManager: GameStateManagerProtocol {
     }
     
     private func startCountdown() {
-        var countdown = 3
+        var countdown = Constants.Play.countdownDuration
         gameState.send(.countdown(countdown))
         
         countdownCancellable = Timer.publish(every: 1, on: .main, in: .common)

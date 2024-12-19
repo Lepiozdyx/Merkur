@@ -9,6 +9,7 @@ import Foundation
 
 enum Constants {
     enum Play {
+        static let countdownDuration = 1
         static let gamePlayDuration: TimeInterval = 30 // default value: 30s
         static let penaltyDuration: TimeInterval = 5
         static let itemFallingDuration: TimeInterval = 2.5
@@ -27,7 +28,6 @@ enum Constants {
         static let baseItemSpeed: Double = 150 // points per second
         static let baseMeteorCount = 15
     }
-    
     
     enum Shop {
         static let shieldPrice = 10

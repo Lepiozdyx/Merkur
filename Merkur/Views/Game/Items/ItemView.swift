@@ -17,7 +17,7 @@ struct ItemView: View {
     var body: some View {
         Image(item.type.image)
             .resizable()
-            .frame(width: Constants.Screen.itemSize, height: Constants.Screen.itemSize)
+            .frame(width: Constants.Screen.itemSize, height: Constants.Screen.itemSize * 1.2)
             .position(x: item.position.x, y: item.position.y + offset)
             .opacity(item.isEnabled ? 1 : 0)
             .onTapGesture {
