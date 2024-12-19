@@ -17,6 +17,7 @@ final class GameViewModel: ObservableObject {
     @Published private(set) var score = 0
     @Published private(set) var health: Double = Constants.Play.initialHealth
     @Published private(set) var currentRound = 1
+    @Published private(set) var currentAchievement: Achievement?
     
     private let gameStateManager: GameStateManagerProtocol
     private var penaltyTimer: AnyCancellable?
@@ -117,15 +118,20 @@ final class GameViewModel: ObservableObject {
         gameStateManager.gameState
             .sink { [weak self] state in
                 guard let self = self else { return }
-                self.gameState = state
                 
                 switch state {
+                case .victory:
+                    self.stopGame()
+                    self.currentAchievement = Achievement(type: .random)
+                    self.gameState = state
+                case .gameOver, .paused:
+                    self.stopGame()
+                    self.gameState = state
                 case .playing:
                     self.startGeneratingItems()
-                case .gameOver, .victory, .paused:
-                    self.stopGame()
+                    self.gameState = state
                 default:
-                    break
+                    self.gameState = state
                 }
             }
             .store(in: &cancellables)

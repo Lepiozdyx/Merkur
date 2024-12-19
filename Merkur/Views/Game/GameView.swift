@@ -83,7 +83,23 @@ struct GameView: View {
                             )
                         }
                 case .victory(let score, let round):
-                    EmptyView()
+                    gameView(in: geometry)
+                        .overlay {
+                            VictoryOverlayView(
+                                coins: score,
+                                round: round,
+                                achievement: vm.currentAchievement,
+                                onNextRound: {
+                                    // TODO: Implement next round logic
+                                    vm.resetGame()
+                                    dismiss()
+                                },
+                                onExit: {
+                                    vm.resetGame()
+                                    dismiss()
+                                }
+                            )
+                        }
                 }
             }
             .onAppear {
