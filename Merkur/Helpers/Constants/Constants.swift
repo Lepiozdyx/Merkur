@@ -13,7 +13,7 @@ enum Constants {
         static let penaltyDuration: TimeInterval = 5
         static let itemFallingDuration: TimeInterval = 2.5
         static let itemGenerationPeriod: TimeInterval = 0.7
-        static let maxFallingItems = 43
+        static let maxFallingItems = 40
         static let coinsDroppingChance = 10 // 10 %
         static let initialHealth: Double = 100
         static let meteorDamage: Double = 10

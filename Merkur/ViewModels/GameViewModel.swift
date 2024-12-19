@@ -67,8 +67,10 @@ final class GameViewModel: ObservableObject {
             score += 1
             updateUserData()
         } else if item.type.isMeteor {
-            // ???
-        } else {
+            if let index = items.firstIndex(where: { $0.id == item.id }) {
+                items[index].isEnabled = false
+            }
+        } else if item.type == .rocket {
             activatePenalty()
         }
         

@@ -17,11 +17,15 @@ struct MainBGView: View {
             .overlay(alignment: .bottom) {
                 if isGamefield {
                     VStack(spacing: 40) {
-                        Image(.sun)
-                            .resizable()
-                            .frame(width: 90, height: 90)
-                            .shadow(color: .yellow, radius: 3)
-                            .opacity(0.8)
+                        HStack {
+                            Image(.sun)
+                                .resizable()
+                                .frame(width: 90, height: 90)
+                                .shadow(color: .yellow, radius: 3)
+                                .opacity(0.8)
+                            Spacer()
+                        }
+                        .padding(90)
                         
                         Image(.earth)
                             .resizable()
