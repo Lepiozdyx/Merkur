@@ -16,9 +16,17 @@ struct MainBGView: View {
             .resizable()
             .overlay(alignment: .bottom) {
                 if isGamefield {
-                    Image(.earth)
-                        .resizable()
-                        .frame(width: .infinity, height: 70)
+                    VStack(spacing: 40) {
+                        Image(.sun)
+                            .resizable()
+                            .frame(width: 90, height: 90)
+                            .shadow(color: .yellow, radius: 3)
+                            .opacity(0.8)
+                        
+                        Image(.earth)
+                            .resizable()
+                            .frame(width: .infinity, height: 70)
+                    }
                 }
             }
             .ignoresSafeArea()

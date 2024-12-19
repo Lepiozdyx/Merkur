@@ -2,7 +2,7 @@
 //  GameViewModel.swift
 //  Merkur
 //
-//  Created by Alex on 18.12.2024.
+//  Created by Alex on 19.12.2024.
 //
 
 import SwiftUI
@@ -10,116 +10,131 @@ import Combine
 
 @MainActor
 final class GameViewModel: ObservableObject {
-    // MARK: - Published Properties
-    @Published private(set) var gameManager: GameManager
-    @Published var showGameOverAlert = false
-    @Published var showVictoryAlert = false
-    @Published var showPauseAlert = false
-    @Published private(set) var currentAchievement: Achievement?
+    @Published private(set) var items: [GameItem] = []
+    @Published private(set) var gameState: GameState = .initial
+    @Published private(set) var timeRemaining: TimeInterval = Constants.Play.gamePlayDuration
+    @Published private(set) var isPenalty = false
+    @Published private(set) var score = 0
     
-    // MARK: - Public Properties
-    var healthPercentage: Double {
-        max(0, min(100, (gameManager.gameState.health / Constants.Game.initialHealth) * 100))
-    }
-    
-    var formattedTime: String {
-        String(format: "%.1f", max(0, gameManager.gameState.timeRemaining))
-    }
-    
-    var isPenalized: Bool {
-        gameManager.gameState.isPenalized
-    }
-    
-    var currentRound: Int {
-        gameManager.gameState.currentRound
-    }
-    
-    var coins: Int {
-        gameManager.gameState.coins
-    }
-    
-    var isShieldActive: Bool {
-        gameManager.isShieldActive
-    }
-    
-    // MARK: - Private Properties
+    private let gameStateManager: GameStateManagerProtocol
+    private var penaltyTimer: AnyCancellable?
+    private var itemGenerationTimer: AnyCancellable?
     private var cancellables = Set<AnyCancellable>()
     
-    // MARK: - Initialization
-    init(screenBounds: CGRect) {
-        self.gameManager = GameManager(screenBounds: screenBounds)
-        setupGameStateObserver()
+    // MARK: - Layout Properties
+    private var screenSize: CGSize = .zero
+    private var safeAreaInsets: EdgeInsets = .init()
+    
+    private var minX: CGFloat {
+        safeAreaInsets.leading + Constants.Screen.itemSize/2
+    }
+    
+    private var maxX: CGFloat {
+        screenSize.width - safeAreaInsets.trailing - Constants.Screen.itemSize/2
+    }
+    
+    // MARK: - Init
+    init(gameStateManager: GameStateManagerProtocol = GameStateManager()) {
+        self.gameStateManager = gameStateManager
+        setupSubscriptions()
     }
     
     // MARK: - Public Methods
+    func updateLayout(size: CGSize, safeArea: EdgeInsets) {
+        screenSize = size
+        safeAreaInsets = safeArea
+    }
+    
     func startGame() {
-        gameManager.startGame()
+        gameStateManager.startGame()
     }
     
-    func pauseGame() {
-        gameManager.pauseGame()
-        showPauseAlert = true
+    func resetGame() {
+        gameStateManager.resetGame()
+        items.removeAll()
+        score = 0
+        isPenalty = false
+        penaltyTimer?.cancel()
+        itemGenerationTimer?.cancel()
     }
     
-    func resumeGame() {
-        showPauseAlert = false
-        gameManager.resumeGame()
-    }
-    
-    func exitToMenu() {
-        gameManager.endGame()
-    }
-    
-    func handleItemTap(_ item: GameItem) {
-        gameManager.handleItemTap(item)
-    }
-    
-    func useAbility(_ type: AbilityType) {
-        gameManager.useAbility(type)
+    func tapItem(_ item: GameItem) {
+        guard case .playing = gameState,
+              !isPenalty,
+              item.isEnabled else { return }
+        
+        if item.type.isCoin {
+            score += 1
+            updateUserData()
+        } else if item.type.isMeteor {
+            // ???
+        } else {
+            activatePenalty()
+        }
+        
+        if let index = items.firstIndex(where: { $0.id == item.id }) {
+            items[index].isEnabled = false
+        }
     }
     
     // MARK: - Private Methods
-    private func setupGameStateObserver() {
-        gameManager.$gameState
+    private func setupSubscriptions() {
+        gameStateManager.gameState
             .sink { [weak self] state in
-                self?.handleGameStateChange(state)
+                self?.gameState = state
+                if case .playing = state {
+                    self?.startGeneratingItems()
+                }
+            }
+            .store(in: &cancellables)
+        
+        gameStateManager.timer
+            .sink { [weak self] time in
+                self?.timeRemaining = Constants.Play.gamePlayDuration - time
             }
             .store(in: &cancellables)
     }
     
-    private func handleGameStateChange(_ state: GameState) {
-        switch state.status {
-        case .completed(.victory):
-            generateRandomAchievement()
-            showVictoryAlert = true
-        case .completed(.defeat):
-            showGameOverAlert = true
-        default:
-            break
+    private func startGeneratingItems() {
+        itemGenerationTimer = Timer.publish(
+            every: Constants.Play.itemGenerationPeriod,
+            on: .main,
+            in: .common
+        )
+        .autoconnect()
+        .sink { [weak self] _ in
+            self?.generateNewItem()
         }
     }
     
-    private func generateRandomAchievement() {
-        let randomType = AchievementType.allCases.randomElement()!
-        currentAchievement = Achievement(type: randomType, isUnlocked: true)
-    }
-    
-    // MARK: - Alert Actions
-    func handleNextRound() {
-        guard currentRound < Constants.Game.Rounds.maxRounds else {
-            exitToMenu()
-            return
-        }
+    private func generateNewItem() {
+        guard items.count < Constants.Play.maxFallingItems else { return }
         
-        gameManager = GameManager(screenBounds: gameManager.screenBounds)
-        gameManager.updateRound(currentRound + 1)
-        showVictoryAlert = false
-        startGame()
+        // % chance of coins dropping
+        let itemType: GameItemType = Int.random(in: 1...Constants.Play.coinsDroppingChance) == 1
+        ? .coin
+        : GameItemType.randomItem
+        
+        let xPosition = CGFloat.random(in: minX...maxX)
+        
+        let item = GameItem(
+            type: itemType,
+            position: CGPoint(x: xPosition, y: -Constants.Screen.itemSize)
+        )
+        items.append(item)
     }
     
-    func handleTryAgain() {
-        gameManager = GameManager(screenBounds: gameManager.screenBounds)
-        showGameOverAlert = false
-        startGame()
+    private func activatePenalty() {
+        isPenalty = true
+        penaltyTimer = Timer.publish(every: Constants.Play.penaltyDuration, on: .main, in: .common)
+            .autoconnect()
+            .first()
+            .sink { [weak self] _ in
+                self?.isPenalty = false
+            }
+    }
+    
+    private func updateUserData() {
+        AppStateService.shared.addCoins(1)
     }
 }

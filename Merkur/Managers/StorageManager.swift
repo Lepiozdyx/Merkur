@@ -7,57 +7,30 @@
 
 import Foundation
 
-enum StorageKey: String {
-    case coins = "userCoins"
-    case highestRound = "highestCompletedRound"
-    case abilities = "purchasedAbilities"
+protocol StorageManagerProtocol {
+    func saveUserData(_ userData: UserData)
+    func getUserData() -> UserData?
 }
 
-@MainActor
-final class StorageManager {
-    static let shared = StorageManager()
-    private let defaults = UserDefaults.standard
+final class StorageManager: StorageManagerProtocol {
+    private let userDefaults: UserDefaults
     
-    private init() {}
-    
-    // MARK: - Coins Management
-    func getCoins() -> Int {
-        defaults.integer(forKey: StorageKey.coins.rawValue)
+    init(userDefaults: UserDefaults = .standard) {
+        self.userDefaults = userDefaults
     }
     
-    func saveCoins(_ coins: Int) {
-        defaults.set(coins, forKey: StorageKey.coins.rawValue)
-    }
-    
-    func addCoins(_ amount: Int) {
-        let current = getCoins()
-        saveCoins(current + amount)
-    }
-    
-    // MARK: - Round Management
-    func getHighestCompletedRound() -> Int {
-        defaults.integer(forKey: StorageKey.highestRound.rawValue)
-    }
-    
-    func saveHighestCompletedRound(_ round: Int) {
-        let current = getHighestCompletedRound()
-        if round > current {
-            defaults.set(round, forKey: StorageKey.highestRound.rawValue)
+    func saveUserData(_ userData: UserData) {
+        if let data = try? JSONEncoder().encode(userData) {
+            userDefaults.set(data, forKey: Constants.StorageKey.userData.rawValue)
         }
     }
     
-    // MARK: - Abilities Management
-    func saveAbilities(_ abilities: [AbilityType: Int]) {
-        let encoded = try? JSONEncoder().encode(abilities)
-        defaults.set(encoded, forKey: StorageKey.abilities.rawValue)
-    }
-    
-    func getAbilities() -> [AbilityType: Int] {
-        guard let data = defaults.data(forKey: StorageKey.abilities.rawValue),
-              let abilities = try? JSONDecoder().decode([AbilityType: Int].self, from: data)
-        else {
-            return [:]
+    func getUserData() -> UserData? {
+        guard let data = userDefaults.data(forKey: Constants.StorageKey.userData.rawValue) else {
+            return nil
         }
-        return abilities
+        
+        let decoder = JSONDecoder()
+        return try? decoder.decode(UserData.self, from: data)
     }
 }

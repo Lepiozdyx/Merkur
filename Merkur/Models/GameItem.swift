@@ -13,12 +13,12 @@ enum GameItemType {
     case coin
     case rocket
     
-    var image: String {
+    var image: ImageResource {
         switch self {
-        case .redMeteor: return "redMeteor"
-        case .blueMeteor: return "blueMeteor"
-        case .coin: return "coin"
-        case .rocket: return "rocket"
+        case .redMeteor: return .redMeteor
+        case .blueMeteor: return .blueMeteor
+        case .coin: return .coin
+        case .rocket: return .rocket
         }
     }
     
@@ -28,15 +28,24 @@ enum GameItemType {
         default: return false
         }
     }
+    
+    var isCoin: Bool {
+        self == .coin
+    }
+    
+    static var randomItem: GameItemType {
+        let types: [GameItemType] = [.rocket, .redMeteor, .blueMeteor]
+        return types.randomElement() ?? .redMeteor
+    }
 }
 
 struct GameItem: Identifiable {
     let id = UUID()
     let type: GameItemType
     var position: CGPoint
-    var isActive: Bool = true
+    var isEnabled: Bool = true
     
     var shouldDamageHealth: Bool {
-        isActive && type.isMeteor
+        isEnabled && type.isMeteor
     }
 }

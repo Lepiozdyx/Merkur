@@ -29,7 +29,8 @@ enum AbilityType: String, CaseIterable, Codable {
     }
 }
 
-struct Ability {
+struct Ability: Identifiable {
+    let id = UUID()
     let type: AbilityType
     var count: Int
     var isActive: Bool

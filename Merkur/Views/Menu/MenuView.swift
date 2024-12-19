@@ -8,25 +8,44 @@
 import SwiftUI
 
 struct MenuView: View {
+    @StateObject private var vm = MenuViewModel()
+    
+    @Environment(\.verticalSizeClass) var verticalSizeClass
+    var isPortrait: Bool { verticalSizeClass == .regular }
+    var isIPhone: Bool { UIDevice.current.userInterfaceIdiom == .phone }
+    
     var body: some View {
         NavigationView {
             ZStack(alignment: .top) {
                 MainBGView()
                 
+                // TODO: Relocate to shop ??
                 // MARK: Coins
                 HStack {
                     Spacer()
                     // Number of coins earned
-                    CounterBGView(text: "0", width: 200, height: 51)
+                    CounterBGView(
+                        text: "\(vm.userData.coins)",
+                        width: 180,
+                        height: 50
+                    )
                 }
                 .padding()
                 
                 VStack(spacing: 10) {
                     Spacer()
                     Spacer()
+                    
+                    // Orientation message
+                    if isPortrait && isIPhone {
+                        Text("Tip: Play in landscape screen orientation")
+                            .mFont(14)
+                    }
+                    
+                    // Menu buttons
                     HStack(spacing: 20) {
                         NavigationLink {
-                            // GameView()
+                             GameView()
                         } label: {
                             ActionView(text: "START", fontSize: 28, width: 250, height: 80)
                         }
@@ -69,7 +88,12 @@ struct MenuView: View {
                     HStack {
                         Spacer()
                         // Saved best wave number
-                        ActionView(text: "BEST SCORE: WAVE 5", fontSize: 14, width: 130, height: 60)
+                        ActionView(
+                            text: "BEST SCORE: WAVE \(vm.userData.wave)",
+                            fontSize: 12,
+                            width: 140,
+                            height: 50
+                        )
                     }
                 }
                 .padding()
