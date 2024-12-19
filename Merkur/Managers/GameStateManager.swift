@@ -15,7 +15,7 @@ protocol GameStateManagerProtocol {
     func startGame()
     func pauseGame()
     func resumeGame()
-    func endGame(withScore score: Int)
+    func endGame(withScore score: Int, isVictory: Bool)
     func resetGame()
 }
 
@@ -25,6 +25,7 @@ final class GameStateManager: GameStateManagerProtocol {
     
     private var timerCancellable: AnyCancellable?
     private var countdownCancellable: AnyCancellable?
+    private var currentRound = 1
     
     func startGame() {
         resetGame()
@@ -41,9 +42,13 @@ final class GameStateManager: GameStateManagerProtocol {
         startGameTimer()
     }
     
-    func endGame(withScore score: Int) {
+    func endGame(withScore score: Int, isVictory: Bool) {
         timerCancellable?.cancel()
-        gameState.send(.finished(score))
+        if isVictory {
+            gameState.send(.victory(score: score, round: currentRound))
+        } else {
+            gameState.send(.gameOver(score: score, round: currentRound))
+        }
     }
     
     func resetGame() {
@@ -80,7 +85,7 @@ final class GameStateManager: GameStateManagerProtocol {
                 let newTime = self.timer.value + 0.1
                 
                 if newTime >= Constants.Play.gamePlayDuration {
-                    self.endGame(withScore: 0)
+                    self.endGame(withScore: 0, isVictory: true)
                 } else {
                     self.timer.send(newTime)
                 }

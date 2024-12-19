@@ -20,7 +20,11 @@ struct GameView: View {
                 VStack {
                     HStack {
                         MenuButtonView {
-                            // add pause state action
+                            if case .playing = vm.gameState {
+                                vm.pauseGame()
+                            } else {
+                                dismiss()
+                            }
                         }
                         Spacer()
                     }
@@ -33,9 +37,9 @@ struct GameView: View {
                     HStack {
                         Spacer()
                         HealthBarView(
-                            width: 180,
+                            width: 185,
                             height: 50,
-                            healthBarWidth: 120,
+                            healthBarWidth: 125,
                             currentHealth: vm.health
                         )
                     }
@@ -45,7 +49,7 @@ struct GameView: View {
                 
                 // Ability buttons
                 
-                // Game
+                // Game States
                 switch vm.gameState {
                 case .initial:
                     StartButtonView { vm.startGame() }
@@ -54,14 +58,31 @@ struct GameView: View {
                 case .playing:
                     gameView(in: geometry)
                 case .paused:
-                    PauseOverlayView {
-                        // resume action
-                    } onExit: {
-                        vm.resetGame()
-                        dismiss()
-                    }
-                case .finished:
-                    // GameOverOverlayView() or VictoryOverlayView()
+                    gameView(in: geometry)
+                        .overlay {
+                            PauseOverlayView {
+                                vm.resumeGame()
+                            } onExit: {
+                                vm.resetGame()
+                                dismiss()
+                            }
+                        }
+                case .gameOver(let score, let round):
+                    gameView(in: geometry)
+                        .overlay {
+                            GameOverOverlayView(
+                                coins: score,
+                                round: round,
+                                onRetry: {
+                                    vm.retryGame()
+                                },
+                                onExit: {
+                                    vm.resetGame()
+                                    dismiss()
+                                }
+                            )
+                        }
+                case .victory(let score, let round):
                     EmptyView()
                 }
             }
@@ -91,12 +112,18 @@ struct GameView: View {
         ZStack {
             // Timer
             VStack {
-                ActionView(
-                    text: String(format: "%.0f", vm.timeRemaining),
-                    fontSize: 30,
-                    width: 150,
-                    height: 44
-                )
+                HStack {
+                    Spacer()
+                    ActionView(
+                        text: String(format: "%.0f", vm.timeRemaining),
+                        fontSize: 30,
+                        width: 100,
+                        height: 44
+                    )
+                    Spacer()
+                    Spacer()
+                    Spacer()
+                }
                 
                 Spacer()
             }
