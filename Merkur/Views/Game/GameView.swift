@@ -35,7 +35,8 @@ struct GameView: View {
                         HealthBarView(
                             width: 180,
                             height: 50,
-                            healthBarWidth: 120
+                            healthBarWidth: 120,
+                            currentHealth: vm.health
                         )
                     }
                     Spacer()
@@ -108,6 +109,9 @@ struct GameView: View {
                     screenHeight: geometry.size.height,
                     onTap: {
                         vm.tapItem(item)
+                    },
+                    onFall: {
+                        vm.handleItemFall(item)
                     }
                 )
             }

@@ -15,6 +15,7 @@ final class GameViewModel: ObservableObject {
     @Published private(set) var timeRemaining: TimeInterval = Constants.Play.gamePlayDuration
     @Published private(set) var isPenalty = false
     @Published private(set) var score = 0
+    @Published private(set) var health: Double = Constants.Play.initialHealth
     
     private let gameStateManager: GameStateManagerProtocol
     private var penaltyTimer: AnyCancellable?
@@ -53,6 +54,7 @@ final class GameViewModel: ObservableObject {
         gameStateManager.resetGame()
         items.removeAll()
         score = 0
+        health = Constants.Play.initialHealth
         isPenalty = false
         penaltyTimer?.cancel()
         itemGenerationTimer?.cancel()
@@ -63,19 +65,45 @@ final class GameViewModel: ObservableObject {
               !isPenalty,
               item.isEnabled else { return }
         
-        if item.type.isCoin {
-            score += 1
-            updateUserData()
-        } else if item.type.isMeteor {
-            if let index = items.firstIndex(where: { $0.id == item.id }) {
-                items[index].isEnabled = false
+        // Find the item in our array
+        if let index = items.firstIndex(where: { $0.id == item.id }) {
+            var updatedItem = items[index]
+            
+            if item.type.isCoin {
+                score += 1
+                updateUserData()
+                // Disable coin after collecting
+                updatedItem.isEnabled = false
+            } else if item.type.isMeteor {
+                // Disable meteor after tapping - it's destroyed
+                updatedItem.isEnabled = false
+            } else if item.type == .rocket {
+                // Rocket tap triggers penalty but doesn't disable the item
+                activatePenalty()
             }
-        } else if item.type == .rocket {
-            activatePenalty()
+            
+            // Update the item in our array
+            items[index] = updatedItem
         }
+    }
+    
+    func handleItemFall(_ item: GameItem) {
+        guard case .playing = gameState else { return }
+        
+        print("Handling fall for item:", item.type, "isEnabled:", item.isEnabled)
         
         if let index = items.firstIndex(where: { $0.id == item.id }) {
-            items[index].isEnabled = false
+            // Check if item is still enabled (hasn't been tapped)
+            if items[index].isEnabled {
+                // Only disable the item after checking damage
+                if item.shouldDamageHealth {
+                    print("Item will damage health. Current health:", health)
+                    applyDamage()
+                    print("Health after damage:", health)
+                }
+                // Disable item after processing fall
+                items[index].isEnabled = false
+            }
         }
     }
     
@@ -134,6 +162,15 @@ final class GameViewModel: ObservableObject {
             .sink { [weak self] _ in
                 self?.isPenalty = false
             }
+    }
+    
+    private func applyDamage() {
+        health = max(0, health - Constants.Play.meteorDamage)
+        print("Calculating new health:", health)
+        
+        if health <= 0 {
+            gameStateManager.endGame(withScore: score)
+        }
     }
     
     private func updateUserData() {

@@ -11,9 +11,15 @@ struct HealthBarView: View {
     let width: CGFloat
     let height: CGFloat
     let healthBarWidth: CGFloat
+    let currentHealth: Double
     
     @State private var isDamaged = false
-    @State private var previousHealth: CGFloat = 0
+    @State private var previousHealth: Double = Constants.Play.initialHealth
+    
+    private var currentHealthBarWidth: CGFloat {
+        let healthPercentage = currentHealth / Constants.Play.initialHealth
+        return min(healthBarWidth, healthBarWidth * CGFloat(healthPercentage))
+    }
     
     var body: some View {
         Image(.health)
@@ -22,7 +28,7 @@ struct HealthBarView: View {
             .overlay(alignment: .leading) {
                 // Health bar
                 Rectangle()
-                    .frame(width: healthBarWidth, height: height/2.6)
+                    .frame(width: currentHealthBarWidth, height: height/2.6)
                     .foregroundStyle(.pink)
                     .shadow(
                         color: isDamaged ? .red : .pink,
@@ -30,25 +36,25 @@ struct HealthBarView: View {
                     )
                     .opacity(isDamaged ? 0.9 : 0.8)
                     .offset(x: 53)
-                    .animation(.easeInOut(duration: 0.3), value: healthBarWidth)
-                    .onChange(of: healthBarWidth) { newWidth in
-                        // Show damage effect when health decreases
-                        if newWidth < previousHealth {
-                            isDamaged = true
-                            // Schedule damage effect to be removed
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                                isDamaged = false
-                            }
-                        }
-                        previousHealth = newWidth
+                    .animation(.easeInOut(duration: 0.3), value: currentHealthBarWidth)
+            }
+            .onChange(of: currentHealth) { newHealth in
+                print("Health changed to:", newHealth) // Debug print
+                if newHealth < previousHealth {
+                    isDamaged = true
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        isDamaged = false
                     }
+                }
+                previousHealth = newHealth
             }
             .onAppear {
-                previousHealth = healthBarWidth
+                print("HealthBarView appeared with health:", currentHealth) // Debug print
+                previousHealth = currentHealth
             }
     }
 }
 
 #Preview {
-    HealthBarView(width: 180, height: 50, healthBarWidth: 100)
+    HealthBarView(width: 180, height: 50, healthBarWidth: 100, currentHealth: 80)
 }
