@@ -12,7 +12,6 @@ enum GameState {
     case countdown(Int)
     case playing
     case paused
-//    case finished(Int)
-    case gameOver(score: Int, round: Int)
-    case victory(score: Int, round: Int)
+    case gameOver(score: Int)
+    case victory(score: Int)
 }

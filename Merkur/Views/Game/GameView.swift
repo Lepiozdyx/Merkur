@@ -67,12 +67,12 @@ struct GameView: View {
                                 dismiss()
                             }
                         }
-                case .gameOver(let score, let round):
+                case .gameOver(let score):
                     gameView(in: geometry)
                         .overlay {
                             GameOverOverlayView(
                                 coins: score,
-                                round: round,
+                                round: vm.currentRound,
                                 onRetry: {
                                     vm.retryGame()
                                 },
@@ -82,16 +82,16 @@ struct GameView: View {
                                 }
                             )
                         }
-                case .victory(let score, let round):
+                case .victory(let score):
                     gameView(in: geometry)
                         .overlay {
                             VictoryOverlayView(
                                 coins: score,
-                                round: round,
+                                round: vm.currentRound,
                                 achievement: vm.currentAchievement,
                                 onNextRound: {
                                     vm.updateHighestWave()
-                                    if round < Constants.Rounds.maxRoundsNumber {
+                                    if vm.currentRound < Constants.Rounds.maxRounds {
                                         vm.startNextRound()
                                     } else {
                                         vm.resetGame()
@@ -99,6 +99,7 @@ struct GameView: View {
                                     }
                                 },
                                 onExit: {
+                                    vm.updateHighestWave()
                                     vm.resetGame()
                                     dismiss()
                                 }

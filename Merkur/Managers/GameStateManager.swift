@@ -45,9 +45,9 @@ final class GameStateManager: GameStateManagerProtocol {
     func endGame(withScore score: Int, isVictory: Bool) {
         timerCancellable?.cancel()
         if isVictory {
-            gameState.send(.victory(score: score, round: currentRound))
+            gameState.send(.victory(score: score))
         } else {
-            gameState.send(.gameOver(score: score, round: currentRound))
+            gameState.send(.gameOver(score: score))
         }
     }
     

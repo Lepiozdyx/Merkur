@@ -10,7 +10,7 @@ import Foundation
 enum Constants {
     enum Play {
         static let countdownDuration = 1 // 3s
-        static let gamePlayDuration: TimeInterval = 15 // default value: 30s
+        static let gamePlayDuration: TimeInterval = 5 // default value: 30s
         static let penaltyDuration: TimeInterval = 5
         static let coinsDroppingChance = 10 // 10 %
         static let initialHealth: Double = 100
@@ -22,23 +22,23 @@ enum Constants {
         static let itemGenerationPeriod: TimeInterval = 0.7
         static let maxFallingItems = 40
         
-        static let maxRoundsNumber = 5
+        static let maxRounds = 5
         
         static let speedMultiplier: [Double] = [1.0, 1.2, 1.4, 1.6, 1.8]
         static let itemsMultiplier: [Double] = [1.0, 1.3, 1.6, 1.9, 2.2]
         
         static func getFallingDuration(for round: Int) -> TimeInterval {
-            let roundIndex = max(0, min(round - 1, maxRoundsNumber - 1))
+            let roundIndex = max(0, min(round - 1, maxRounds - 1))
             return itemFallingDuration / speedMultiplier[roundIndex]
         }
         
         static func getGenerationPeriod(for round: Int) -> TimeInterval {
-            let roundIndex = max(0, min(round - 1, maxRoundsNumber - 1))
+            let roundIndex = max(0, min(round - 1, maxRounds - 1))
             return itemGenerationPeriod / speedMultiplier[roundIndex]
         }
         
         static func getMaxFallingItems(for round: Int) -> Int {
-            let roundIndex = max(0, min(round - 1, maxRoundsNumber - 1))
+            let roundIndex = max(0, min(round - 1, maxRounds - 1))
             return Int(Double(maxFallingItems) * itemsMultiplier[roundIndex])
         }
     }

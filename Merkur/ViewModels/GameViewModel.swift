@@ -79,7 +79,7 @@ final class GameViewModel: ObservableObject {
     }
     
     func startNextRound() {
-        guard currentRound < Constants.Rounds.maxRoundsNumber else { return }
+        guard currentRound < Constants.Rounds.maxRounds else { return }
         currentRound += 1
         resetGame()
         startGame()
