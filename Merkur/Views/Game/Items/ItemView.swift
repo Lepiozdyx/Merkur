@@ -30,12 +30,10 @@ struct ItemView: View {
             .onAppear {
                 let fallingDuration = Constants.Rounds.getFallingDuration(for: currentRound)
                 
-                // Start falling animation
                 withAnimation(.linear(duration: fallingDuration)) {
                     offset = screenHeight + Constants.Screen.itemSize * 2
                 }
                 
-                // Schedule fall event for when animation completes
                 DispatchQueue.main.asyncAfter(deadline: .now() + fallingDuration) {
                     if !hasFallen && item.isEnabled {
                         hasFallen = true

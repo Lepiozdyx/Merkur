@@ -19,15 +19,14 @@ struct MenuView: View {
             ZStack(alignment: .top) {
                 MainBGView()
                 
-                // TODO: Relocate to shop ??
+                // TODO: Relocate bar to shop ??
                 // MARK: Coins
                 HStack {
                     Spacer()
-                    // Number of coins earned
                     CounterBGView(
                         text: "\(vm.userData.coins)",
-                        width: 180,
-                        height: 50
+                        width: 160,
+                        height: 45
                     )
                 }
                 .padding()
@@ -87,7 +86,6 @@ struct MenuView: View {
                     
                     HStack {
                         Spacer()
-                        // Saved best wave number
                         ActionView(
                             text: "BEST SCORE: WAVE \(vm.userData.wave)",
                             fontSize: 12,
