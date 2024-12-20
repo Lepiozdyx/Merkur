@@ -19,7 +19,7 @@ final class GameViewModel: ObservableObject {
     @Published private(set) var currentRound = 1
     @Published private(set) var currentAchievement: Achievement?
     
-    private let gameStateManager: GameStateManagerProtocol
+    private var gameStateManager: GameStateManagerProtocol
     private var penaltyTimer: AnyCancellable?
     private var itemGenerationTimer: AnyCancellable?
     private var cancellables = Set<AnyCancellable>()
@@ -40,6 +40,12 @@ final class GameViewModel: ObservableObject {
     init(gameStateManager: GameStateManagerProtocol = GameStateManager()) {
         self.gameStateManager = gameStateManager
         setupSubscriptions()
+        
+        self.gameStateManager.onTimeOut = { [weak self] in
+            guard let self = self else { return }
+            self.stopGame()
+            self.gameStateManager.endGame(withScore: self.score, isVictory: true)
+        }
     }
     
     // MARK: - Public Methods

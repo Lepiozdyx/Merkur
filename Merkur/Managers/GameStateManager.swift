@@ -11,6 +11,7 @@ import Combine
 protocol GameStateManagerProtocol {
     var gameState: CurrentValueSubject<GameState, Never> { get }
     var timer: CurrentValueSubject<TimeInterval, Never> { get }
+    var onTimeOut: (() -> Void)? { get set }
     
     func startGame()
     func pauseGame()
@@ -22,10 +23,10 @@ protocol GameStateManagerProtocol {
 final class GameStateManager: GameStateManagerProtocol {
     let gameState = CurrentValueSubject<GameState, Never>(.initial)
     let timer = CurrentValueSubject<TimeInterval, Never>(0)
+    var onTimeOut: (() -> Void)?
     
     private var timerCancellable: AnyCancellable?
     private var countdownCancellable: AnyCancellable?
-    private var currentRound = 1
     
     func startGame() {
         resetGame()
@@ -85,7 +86,7 @@ final class GameStateManager: GameStateManagerProtocol {
                 let newTime = self.timer.value + 0.1
                 
                 if newTime >= Constants.Play.gamePlayDuration {
-                    self.endGame(withScore: 0, isVictory: true)
+                    self.onTimeOut?()
                 } else {
                     self.timer.send(newTime)
                 }
