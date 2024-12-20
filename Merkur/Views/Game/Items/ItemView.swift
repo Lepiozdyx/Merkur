@@ -10,6 +10,7 @@ import SwiftUI
 struct ItemView: View {
     let item: GameItem
     let screenHeight: CGFloat
+    let currentRound: Int
     let onTap: () -> Void
     let onFall: () -> Void
     
@@ -27,18 +28,17 @@ struct ItemView: View {
                 onTap()
             }
             .onAppear {
-                print("Item appeared:", item.type)
+                let fallingDuration = Constants.Rounds.getFallingDuration(for: currentRound)
                 
                 // Start falling animation
-                withAnimation(.linear(duration: Constants.Play.itemFallingDuration)) {
+                withAnimation(.linear(duration: fallingDuration)) {
                     offset = screenHeight + Constants.Screen.itemSize * 2
                 }
                 
                 // Schedule fall event for when animation completes
-                DispatchQueue.main.asyncAfter(deadline: .now() + Constants.Play.itemFallingDuration) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + fallingDuration) {
                     if !hasFallen && item.isEnabled {
                         hasFallen = true
-                        print("Item falling:", item.type)
                         onFall()
                     }
                 }

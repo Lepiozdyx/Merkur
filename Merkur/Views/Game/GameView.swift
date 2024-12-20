@@ -90,9 +90,13 @@ struct GameView: View {
                                 round: round,
                                 achievement: vm.currentAchievement,
                                 onNextRound: {
-                                    // TODO: Implement next round logic
-                                    vm.resetGame()
-                                    dismiss()
+                                    vm.updateHighestWave()
+                                    if round < Constants.Rounds.maxRoundsNumber {
+                                        vm.startNextRound()
+                                    } else {
+                                        vm.resetGame()
+                                        dismiss()
+                                    }
                                 },
                                 onExit: {
                                     vm.resetGame()
@@ -150,6 +154,7 @@ struct GameView: View {
                 ItemView(
                     item: item,
                     screenHeight: geometry.size.height,
+                    currentRound: vm.currentRound,
                     onTap: {
                         vm.tapItem(item)
                     },

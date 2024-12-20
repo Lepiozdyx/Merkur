@@ -78,6 +78,29 @@ final class GameViewModel: ObservableObject {
         startGame()
     }
     
+    func startNextRound() {
+        guard currentRound < Constants.Rounds.maxRoundsNumber else { return }
+        currentRound += 1
+        resetGame()
+        startGame()
+    }
+    
+    func updateHighestWave() {
+        var cancellable: AnyCancellable?
+        cancellable = AppStateService.shared.userDataPublisher
+            .first()
+            .sink { [weak self] userData in
+                guard let self = self else { return }
+                if self.currentRound > userData.wave {
+                    AppStateService.shared.updateUserData(UserData(
+                        coins: userData.coins,
+                        wave: self.currentRound
+                    ))
+                }
+                cancellable?.cancel()
+            }
+    }
+    
     func tapItem(_ item: GameItem) {
         guard case .playing = gameState,
               !isPenalty,
@@ -146,8 +169,9 @@ final class GameViewModel: ObservableObject {
     private func startGeneratingItems() {
         itemGenerationTimer?.cancel()
         
+        let generationPeriod = Constants.Rounds.getGenerationPeriod(for: currentRound)
         itemGenerationTimer = Timer.publish(
-            every: Constants.Play.itemGenerationPeriod,
+            every: generationPeriod,
             on: .main,
             in: .common
         )
@@ -158,7 +182,8 @@ final class GameViewModel: ObservableObject {
     }
     
     private func generateNewItem() {
-        guard items.count < Constants.Play.maxFallingItems else { return }
+        let maxItems = Constants.Rounds.getMaxFallingItems(for: currentRound)
+        guard items.count < maxItems else { return }
         
         let itemType: GameItemType = Int.random(in: 1...Constants.Play.coinsDroppingChance) == 1
         ? .coin
