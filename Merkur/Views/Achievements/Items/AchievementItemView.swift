@@ -9,37 +9,31 @@ import SwiftUI
 
 struct AchievementItemView: View {
     let achievement: Achievement
-    @State private var isAnimating = false
     
     var body: some View {
         Image(achievement.type.image)
             .resizable()
-            .frame(width: 250, height: 200)
-            .blur(radius: achievement.isUnlocked ? 0 : 10)
+            .aspectRatio(contentMode: .fit)
+            .frame(height: 250)
+            .blur(radius: achievement.isUnlocked ? 0 : 5)
             .overlay {
                 if !achievement.isUnlocked {
-                    Image(systemName: "lock.fill")
-                        .font(.system(size: 50))
-                        .foregroundColor(.white)
-                        .opacity(0.5)
-                        .offset(y: 15)
+                    VStack {
+                        Image(systemName: "lock.shield.fill")
+                            .font(.system(size: 50))
+                            .foregroundColor(.white)
+                            .opacity(0.7)
+                        
+                        Text("LOCKED")
+                            .mFont(12)
+                    }
+                    .offset(y: 15)
                 }
             }
             .shadow(
                 color: achievement.isUnlocked ? .yellow : .clear,
-                radius: isAnimating ? 14 : 8
+                radius: 10
             )
-            .scaleEffect(achievement.isUnlocked && isAnimating ? 1 : 0.98)
-            .animation(
-                .easeInOut(duration: 0.7)
-                .repeatForever(autoreverses: true),
-                value: isAnimating
-            )
-            .onAppear {
-                if achievement.isUnlocked {
-                    isAnimating = true
-                }
-            }
     }
 }
 

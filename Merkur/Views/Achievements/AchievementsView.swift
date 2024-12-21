@@ -26,14 +26,13 @@ struct AchievementsView: View {
                 
                 Spacer()
                 
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack {
-                        ForEach(vm.achievements) { achievement in
-                            AchievementItemView(achievement: achievement)
-                        }
+                TabView {
+                    ForEach(vm.achievements) { achievement in
+                        AchievementItemView(achievement: achievement)
                     }
-                    .padding(.horizontal)
+                    .padding(.bottom, 40)
                 }
+                .tabViewStyle(.page)
                 
                 Spacer()
             }
