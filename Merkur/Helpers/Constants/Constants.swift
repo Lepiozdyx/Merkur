@@ -10,7 +10,7 @@ import Foundation
 enum Constants {
     enum Play {
         static let countdownDuration = 1 // 3s
-        static let gamePlayDuration: TimeInterval = 5 // default value: 30s
+        static let gamePlayDuration: TimeInterval = 15 // default value: 30s
         static let penaltyDuration: TimeInterval = 5
         static let coinsDroppingChance = 10 // 10 %
         static let initialHealth: Double = 100
@@ -58,5 +58,10 @@ enum Constants {
         case coins = "userCoins"
         case highestWave = "highestCompletedWave"
         case abilities = "purchasedAbilities"
+    }
+    
+    enum Sounds {
+        static let click = "click"
+        static let music = "music"
     }
 }

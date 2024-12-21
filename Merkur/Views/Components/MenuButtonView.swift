@@ -23,6 +23,7 @@ struct MenuButtonView: View {
                         .foregroundStyle(.white)
                 }
         }
+        .withSound()
     }
 }
 

@@ -25,6 +25,7 @@ struct ItemView: View {
             .opacity(item.isEnabled ? 1 : 0)
             .onTapGesture {
                 guard item.isEnabled else { return }
+                SoundManager.shared.playSound(.click)
                 onTap()
             }
             .onAppear {

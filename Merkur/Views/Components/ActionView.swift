@@ -23,6 +23,7 @@ struct ActionView: View {
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
             }
+            .withSound()
     }
 }
 

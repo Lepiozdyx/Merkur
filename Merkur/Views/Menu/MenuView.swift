@@ -70,7 +70,7 @@ struct MenuView: View {
                     }
                     
                     NavigationLink {
-                        // SettingsView()
+                         SettingsView()
                     } label: {
                         ActionView(text: "SETTINGS", fontSize: 28, width: 250, height: 80)
                     }
@@ -82,21 +82,26 @@ struct MenuView: View {
                 // MARK: Best score
                 VStack {
                     Spacer()
-                    
                     HStack {
                         Spacer()
-                        ActionView(
-                            text: "BEST SCORE: WAVE \(vm.userData.wave)",
-                            fontSize: 12,
-                            width: 140,
-                            height: 50
-                        )
+                        Image(.achUnderlay)
+                            .resizable()
+                            .frame(maxWidth: 130, maxHeight: 50)
+                            .overlay {
+                                Text("BEST SCORE: WAVE \(vm.userData.wave)")
+                                    .mFont(12)
+                                    .multilineTextAlignment(.center)
+                                    .padding(.horizontal)
+                            }
                     }
                 }
                 .padding()
             }
         }
         .navigationViewStyle(.stack)
+        .onAppear {
+            SoundManager.shared.updateMusicState()
+        }
     }
 }
 
