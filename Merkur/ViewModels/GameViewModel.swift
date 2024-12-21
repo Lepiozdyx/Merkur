@@ -10,6 +10,7 @@ import Combine
 
 @MainActor
 final class GameViewModel: ObservableObject {
+    // MARK: - Game State Properties
     @Published private(set) var items: [GameItem] = []
     @Published private(set) var gameState: GameState = .initial
     @Published private(set) var timeRemaining: TimeInterval = Constants.Play.gamePlayDuration
@@ -19,9 +20,15 @@ final class GameViewModel: ObservableObject {
     @Published private(set) var currentRound = 1
     @Published private(set) var currentAchievement: Achievement?
     
+    // MARK: - Abilities Properties
+    @Published private(set) var abilities: [Ability] = []
+    @Published private(set) var isShieldActive = false
+    
+    // MARK: - Private Properties
     private var gameStateManager: GameStateManagerProtocol
     private var penaltyTimer: AnyCancellable?
     private var itemGenerationTimer: AnyCancellable?
+    private var shieldTimer: AnyCancellable?
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Layout Properties
@@ -64,8 +71,11 @@ final class GameViewModel: ObservableObject {
         score = 0
         health = Constants.Play.initialHealth
         isPenalty = false
+        isShieldActive = false
         penaltyTimer?.cancel()
+        shieldTimer?.cancel()
         itemGenerationTimer?.cancel()
+        loadAbilities()
     }
     
     func pauseGame() {
@@ -92,21 +102,22 @@ final class GameViewModel: ObservableObject {
     }
     
     func updateHighestWave() {
-        var cancellable: AnyCancellable?
-        cancellable = AppStateService.shared.userDataPublisher
+        AppStateService.shared.userDataPublisher
             .first()
             .sink { [weak self] userData in
                 guard let self = self else { return }
                 if self.currentRound > userData.wave {
                     AppStateService.shared.updateUserData(UserData(
                         coins: userData.coins,
-                        wave: self.currentRound
+                        wave: self.currentRound,
+                        purchasedAbilities: userData.purchasedAbilities
                     ))
                 }
-                cancellable?.cancel()
             }
+            .store(in: &cancellables)
     }
     
+    // MARK: - Game Items Methods
     func tapItem(_ item: GameItem) {
         guard case .playing = gameState,
               !isPenalty,
@@ -134,11 +145,50 @@ final class GameViewModel: ObservableObject {
         
         if let index = items.firstIndex(where: { $0.id == item.id }) {
             if items[index].isEnabled {
-                if item.shouldDamageHealth {
+                if item.shouldDamageHealth && !isShieldActive {
                     applyDamage()
                 }
                 items[index].isEnabled = false
             }
+        }
+    }
+    
+    // MARK: - Abilities Methods
+    func loadAbilities() {
+        AppStateService.shared.userDataPublisher
+            .map { $0.purchasedAbilities }
+            .sink { [weak self] purchased in
+                self?.abilities = AbilityType.allCases.map { type in
+                    Ability(
+                        type: type,
+                        count: purchased.getCount(for: type),
+                        isActive: false
+                    )
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
+    func useAbility(_ type: AbilityType) {
+        guard case .playing = gameState,
+              let index = abilities.firstIndex(where: { $0.type == type }),
+              abilities[index].count > 0,
+              !abilities[index].isActive else { return }
+        
+        guard AppStateService.shared.useAbility(type) else { return }
+        
+        var ability = abilities[index]
+        ability.count -= 1
+        ability.isActive = true
+        abilities[index] = ability
+        
+        switch type {
+        case .shield:
+            activateShield()
+        case .meteorDestruction:
+            destroyAllMeteors()
+        case .penaltyCancel:
+            cancelPenalty()
         }
     }
     
@@ -214,6 +264,51 @@ final class GameViewModel: ObservableObject {
             }
     }
     
+    private func activateShield() {
+        isShieldActive = true
+        shieldTimer?.cancel()
+        
+        shieldTimer = Timer.publish(every: 5, on: .main, in: .common)
+            .autoconnect()
+            .first()
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                self.isShieldActive = false
+                if let index = self.abilities.firstIndex(where: { $0.type == .shield }) {
+                    var ability = self.abilities[index]
+                    ability.isActive = false
+                    self.abilities[index] = ability
+                }
+            }
+    }
+    
+    private func destroyAllMeteors() {
+        items = items.map { item in
+            var updatedItem = item
+            if item.type.isMeteor && item.isEnabled {
+                updatedItem.isEnabled = false
+            }
+            return updatedItem
+        }
+        
+        if let index = abilities.firstIndex(where: { $0.type == .meteorDestruction }) {
+            var ability = abilities[index]
+            ability.isActive = false
+            abilities[index] = ability
+        }
+    }
+    
+    private func cancelPenalty() {
+        isPenalty = false
+        penaltyTimer?.cancel()
+        
+        if let index = abilities.firstIndex(where: { $0.type == .penaltyCancel }) {
+            var ability = abilities[index]
+            ability.isActive = false
+            abilities[index] = ability
+        }
+    }
+    
     private func applyDamage() {
         health = max(0, health - Constants.Play.meteorDamage)
         
@@ -226,6 +321,7 @@ final class GameViewModel: ObservableObject {
     private func stopGame() {
         itemGenerationTimer?.cancel()
         penaltyTimer?.cancel()
+        shieldTimer?.cancel()
         isPenalty = false
     }
     

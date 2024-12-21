@@ -44,9 +44,9 @@ enum Constants {
     }
     
     enum Shop {
-        static let shieldPrice = 10
-        static let meteorDestructionPrice = 50
-        static let penaltyCancelPrice = 15
+        static let shieldPrice = 1
+        static let meteorDestructionPrice = 3
+        static let penaltyCancelPrice = 2
     }
     
     enum Screen {

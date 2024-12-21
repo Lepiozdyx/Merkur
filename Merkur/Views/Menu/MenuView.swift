@@ -19,7 +19,6 @@ struct MenuView: View {
             ZStack(alignment: .top) {
                 MainBGView()
                 
-                // TODO: Relocate bar to shop ??
                 // MARK: Coins
                 HStack {
                     Spacer()
@@ -58,7 +57,7 @@ struct MenuView: View {
                     
                     HStack(spacing: 20) {
                         NavigationLink {
-                            // ShopView()
+                             ShopView()
                         } label: {
                             ActionView(text: "SHOP", fontSize: 28, width: 250, height: 80)
                         }

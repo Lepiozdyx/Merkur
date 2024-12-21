@@ -35,34 +35,44 @@ final class AppStateService {
         userDataSubject.send(userData)
     }
     
-    func updateResources(coins: Int? = nil) {
-        var updatedUserData = userDataSubject.value
-        
-        if let coins = coins {
-            updatedUserData.coins = coins
-        }
-        
-        storageManager.saveUserData(updatedUserData)
-        userDataSubject.send(updatedUserData)
-    }
-    
     func addCoins(_ amount: Int) {
-        let updatedUserData = UserData(
-            coins: userDataSubject.value.coins + amount,
-            wave: userDataSubject.value.wave
-        )
-        
+        var updatedUserData = userDataSubject.value
+        updatedUserData.coins += amount
         updateUserData(updatedUserData)
     }
     
     func spendCoins(_ amount: Int) -> Bool {
         guard userDataSubject.value.coins >= amount else { return false }
         
-        let updatedUserData = UserData(
-            coins: userDataSubject.value.coins - amount,
-            wave: userDataSubject.value.wave
-        )
+        var updatedUserData = userDataSubject.value
+        updatedUserData.coins -= amount
+        updateUserData(updatedUserData)
+        return true
+    }
+    
+    // MARK: - Abilities Methods
+    func updateAbilities(_ abilities: PurchasedAbilities) {
+        var updatedUserData = userDataSubject.value
+        updatedUserData.purchasedAbilities = abilities
+        updateUserData(updatedUserData)
+    }
+    
+    @discardableResult
+    func purchaseAbility(_ type: AbilityType) -> Bool {
+        guard spendCoins(type.price) else { return false }
         
+        var updatedUserData = userDataSubject.value
+        updatedUserData.purchasedAbilities.addAbility(type)
+        updateUserData(updatedUserData)
+        return true
+    }
+    
+    @discardableResult
+    func useAbility(_ type: AbilityType) -> Bool {
+        var updatedUserData = userDataSubject.value
+        guard updatedUserData.purchasedAbilities.getCount(for: type) > 0 else { return false }
+        
+        updatedUserData.purchasedAbilities.useAbility(type)
         updateUserData(updatedUserData)
         return true
     }

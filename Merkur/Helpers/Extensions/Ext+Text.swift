@@ -12,6 +12,7 @@ extension Text {
         self
             .foregroundStyle(.white)
             .font(.system(size: size, weight: .heavy, design: .monospaced))
+            .multilineTextAlignment(.center)
     }
 }
 

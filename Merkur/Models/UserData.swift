@@ -10,6 +10,7 @@ import Foundation
 struct UserData: Codable {
     var coins: Int
     var wave: Int
+    var purchasedAbilities: PurchasedAbilities
     
-    static let empty = UserData(coins: 0, wave: 0)
+    static let empty = UserData(coins: 0, wave: 0, purchasedAbilities: .empty)
 }
