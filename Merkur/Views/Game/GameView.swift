@@ -16,7 +16,7 @@ struct GameView: View {
             ZStack {
                 MainBGView(isGamefield: true)
                 
-                // Menu Button
+                // MARK: Menu Button
                 VStack {
                     HStack {
                         MenuButtonView {
@@ -32,7 +32,7 @@ struct GameView: View {
                 }
                 .padding()
                 
-                // Health bar
+                // MARK: Health bar
                 VStack {
                     HStack {
                         Spacer()
@@ -47,9 +47,7 @@ struct GameView: View {
                 }
                 .padding()
                 
-                // Ability buttons
-                
-                // Game States
+                // MARK: Game States
                 switch vm.gameState {
                 case .initial:
                     StartButtonView { vm.startGame() }
@@ -106,8 +104,26 @@ struct GameView: View {
                             )
                         }
                 }
+                
+                // MARK: Ability buttons
+                VStack {
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        ForEach(vm.abilities) { ability in
+                            AbilityButtonView(
+                                ability: ability,
+                                onTap: {
+                                    vm.useAbility(ability.type)
+                                }
+                            )
+                        }
+                    }
+                }
+                .padding()
             }
             .onAppear {
+                vm.loadAbilities()
                 vm.updateLayout(
                     size: geometry.size,
                     safeArea: geometry.safeAreaInsets
@@ -123,15 +139,17 @@ struct GameView: View {
         .navigationBarBackButtonHidden(true)
     }
     
+    // MARK: Countdown view
     private func countdownView(count: Int) -> some View {
         Text("\(count)")
             .mFont(50)
             .transition(.scale)
     }
     
+    // MARK: Game view
     private func gameView(in geometry: GeometryProxy) -> some View {
         ZStack {
-            // Timer
+            // MARK: Timer
             VStack {
                 HStack {
                     Spacer()
@@ -150,7 +168,7 @@ struct GameView: View {
             }
             .padding(.top)
             
-            // Falling items
+            // MARK: Falling items
             ForEach(vm.items) { item in
                 ItemView(
                     item: item,
@@ -165,7 +183,7 @@ struct GameView: View {
                 )
             }
             
-            // Penalty Overlay
+            // MARK: Penalty Overlay
             if vm.isPenalty {
                 Color.black.opacity(0.3)
                     .ignoresSafeArea()
@@ -180,7 +198,6 @@ struct GameView: View {
     }
 }
 
-// MARK: - Preview
 #Preview {
     GameView()
 }
