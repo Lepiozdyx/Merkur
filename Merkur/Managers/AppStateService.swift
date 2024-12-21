@@ -76,4 +76,11 @@ final class AppStateService {
         updateUserData(updatedUserData)
         return true
     }
+    
+    // MARK: - Achievements Methods
+    func unlockAchievement(_ type: AchievementType) {
+        var updatedUserData = userDataSubject.value
+        updatedUserData.unlockedAchievements.insert(String(describing: type))
+        updateUserData(updatedUserData)
+    }
 }

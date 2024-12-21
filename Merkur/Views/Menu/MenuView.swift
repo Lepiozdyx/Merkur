@@ -49,7 +49,7 @@ struct MenuView: View {
                         }
                         
                         NavigationLink {
-                            // AchievementsView()
+                             AchievementsView()
                         } label: {
                             ActionView(text: "ACHIEVEMENTS", fontSize: 28, width: 250, height: 80)
                         }
@@ -90,7 +90,6 @@ struct MenuView: View {
                             .overlay {
                                 Text("BEST SCORE: WAVE \(vm.userData.wave)")
                                     .mFont(12)
-                                    .multilineTextAlignment(.center)
                                     .padding(.horizontal)
                             }
                     }

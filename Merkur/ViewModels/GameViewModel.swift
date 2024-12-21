@@ -66,6 +66,9 @@ final class GameViewModel: ObservableObject {
     }
     
     func resetGame() {
+        if case .victory = gameState {
+            saveCurrentAchievement()
+        }
         gameStateManager.resetGame()
         items.removeAll()
         score = 0
@@ -96,6 +99,7 @@ final class GameViewModel: ObservableObject {
     
     func startNextRound() {
         guard currentRound < Constants.Rounds.maxRounds else { return }
+        saveCurrentAchievement()
         currentRound += 1
         resetGame()
         startGame()
@@ -110,11 +114,18 @@ final class GameViewModel: ObservableObject {
                     AppStateService.shared.updateUserData(UserData(
                         coins: userData.coins,
                         wave: self.currentRound,
-                        purchasedAbilities: userData.purchasedAbilities
+                        purchasedAbilities: userData.purchasedAbilities,
+                        unlockedAchievements: userData.unlockedAchievements
                     ))
                 }
             }
             .store(in: &cancellables)
+    }
+    
+    func saveCurrentAchievement() {
+        if let achievement = currentAchievement {
+            AppStateService.shared.unlockAchievement(achievement.type)
+        }
     }
     
     // MARK: - Game Items Methods
