@@ -11,6 +11,9 @@ final class SoundManager {
     enum SoundEffects: String {
         case click
         case music
+        case coin
+        case rocket
+        case meteor
     }
     
     static let shared = SoundManager()

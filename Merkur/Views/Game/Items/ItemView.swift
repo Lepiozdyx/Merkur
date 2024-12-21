@@ -25,7 +25,7 @@ struct ItemView: View {
             .opacity(item.isEnabled ? 1 : 0)
             .onTapGesture {
                 guard item.isEnabled else { return }
-                SoundManager.shared.playSound(.click)
+                playItemSound()
                 onTap()
             }
             .onAppear {
@@ -42,5 +42,16 @@ struct ItemView: View {
                     }
                 }
             }
+    }
+    
+    private func playItemSound() {
+        switch item.type {
+        case .redMeteor, .blueMeteor:
+            SoundManager.shared.playSound(.meteor)
+        case .coin:
+            SoundManager.shared.playSound(.coin)
+        case .rocket:
+            SoundManager.shared.playSound(.rocket)
+        }
     }
 }
