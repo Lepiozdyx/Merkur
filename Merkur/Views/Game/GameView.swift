@@ -183,6 +183,15 @@ struct GameView: View {
                 )
             }
             
+            // MARK: Active Shield Overlay
+            if vm.isShieldActive {
+                Color.blue
+                    .opacity(0.15)
+                    .ignoresSafeArea()
+                    .allowsHitTesting(false)
+                    .transition(.opacity.animation(.easeInOut(duration: 0.3)))
+            }
+            
             // MARK: Penalty Overlay
             if vm.isPenalty {
                 Color.black.opacity(0.3)

@@ -68,7 +68,7 @@ final class SoundManager {
     
     private func playMusic() {
         guard SettingsManager.shared.isMusicEnabled else { return }
-        guard let url = Bundle.main.url(forResource: Constants.Sounds.music, withExtension: "mp3") else { return }
+        guard let url = Bundle.main.url(forResource: "music", withExtension: "mp3") else { return }
         
         do {
             musicPlayer = try AVAudioPlayer(contentsOf: url)

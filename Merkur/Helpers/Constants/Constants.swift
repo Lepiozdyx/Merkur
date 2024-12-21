@@ -9,12 +9,12 @@ import Foundation
 
 enum Constants {
     enum Play {
-        static let countdownDuration = 1 // 3s
-        static let gamePlayDuration: TimeInterval = 15 // default value: 30s
+        static let countdownDuration = 2
+        static let gamePlayDuration: TimeInterval = 30
         static let penaltyDuration: TimeInterval = 5
-        static let coinsDroppingChance = 10 // 10 %
+        static let coinsDroppingChance = 10
         static let initialHealth: Double = 100
-        static let meteorDamage: Double = 10
+        static let meteorDamage: Double = 20
     }
     
     enum Rounds {
@@ -44,9 +44,9 @@ enum Constants {
     }
     
     enum Shop {
-        static let shieldPrice = 1
-        static let meteorDestructionPrice = 3
-        static let penaltyCancelPrice = 2
+        static let shieldPrice = 50
+        static let meteorDestructionPrice = 75
+        static let penaltyCancelPrice = 35
     }
     
     enum Screen {
@@ -61,7 +61,6 @@ enum Constants {
     }
     
     enum Sounds {
-        static let click = "click"
         static let music = "music"
     }
 }
