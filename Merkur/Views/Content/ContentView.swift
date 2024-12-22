@@ -8,14 +8,26 @@
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject private var vm = ContentViewModel()
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        Group {
+            switch vm.appState {
+            case .loading:
+                LoadingView()
+            case .webView:
+                if let url = vm.webManager.provenURL {
+                    WebViewManager(url: url, webManager: vm.webManager)
+                } else {
+                    WebViewManager(url: WebManager.initialURL, webManager: vm.webManager)
+                }
+            case .mainMenu:
+                MenuView()
+            }
         }
-        .padding()
+        .onAppear {
+            vm.onAppear()
+        }
     }
 }
 

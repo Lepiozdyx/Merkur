@@ -63,7 +63,7 @@ struct MenuView: View {
                         }
                         
                         NavigationLink {
-                            // RulesView()
+                             RulesView()
                         } label: {
                             ActionView(text: "RULES", fontSize: 28, width: 250, height: 80)
                         }

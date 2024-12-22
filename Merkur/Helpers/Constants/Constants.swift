@@ -63,4 +63,12 @@ enum Constants {
     enum Sounds {
         static let music = "music"
     }
+    
+    enum Keys {
+        static let savedURL = "saved_url"
+        static let googleURL = "google.com"
+        static let initial = "https://gatesofzeus.online/score" // google
+//        static let initial = "https://hsonline.pro/json" // yahoo
+        static let rules = "https://hsonline.pro/rules.html"
+    }
 }
