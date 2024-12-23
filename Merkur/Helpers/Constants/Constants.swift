@@ -67,8 +67,7 @@ enum Constants {
     enum Keys {
         static let savedURL = "saved_url"
         static let googleURL = "google.com"
-        static let initial = "https://gatesofzeus.online/score" // google
-//        static let initial = "https://hsonline.pro/json" // yahoo
-        static let rules = "https://hsonline.pro/rules.html"
+        static let initial = "https://merkurgamesonline.xyz/get"
+        static let rules = "https://merkurgamesonline.xyz/rules.html"
     }
 }
