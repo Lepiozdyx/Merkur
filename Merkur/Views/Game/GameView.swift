@@ -37,9 +37,9 @@ struct GameView: View {
                     HStack {
                         Spacer()
                         HealthBarView(
-                            width: 185,
-                            height: 50,
-                            healthBarWidth: 125,
+                            width: 150,
+                            height: 35,
+                            healthBarWidth: 104,
                             currentHealth: vm.health
                         )
                     }

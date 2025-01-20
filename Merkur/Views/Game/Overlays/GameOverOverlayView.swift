@@ -14,7 +14,7 @@ struct GameOverOverlayView: View {
     let onExit: () -> Void
     
     var body: some View {
-        Color.black.opacity(0.3)
+        Color.black.opacity(0.8)
             .ignoresSafeArea()
             .overlay {
                 ZStack {
@@ -23,8 +23,8 @@ struct GameOverOverlayView: View {
                         .frame(maxWidth: 400, maxHeight: 350)
                         .overlay(alignment: .top) {
                             Text("GAME OVER!")
-                                .mFont(16)
-                                .padding(.top, 5)
+                                .mFont(18)
+                                .offset(y: 35)
                         }
                     
                     VStack(spacing: 10) {
@@ -34,7 +34,7 @@ struct GameOverOverlayView: View {
                             
                             HStack {
                                 Text("SCORE:")
-                                    .mFont(20)
+                                    .mFont(18)
                                 
                                 HStack {
                                     Text("+\(coins)")

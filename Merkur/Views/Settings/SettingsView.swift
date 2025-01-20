@@ -31,8 +31,8 @@ struct SettingsView: View {
                 .frame(maxWidth: 400, maxHeight: 350)
                 .overlay(alignment: .top) {
                     Text("SETTINGS")
-                        .mFont(16)
-                        .padding(.top, 5)
+                        .mFont(18)
+                        .offset(y: 35)
                 }
             
             VStack(spacing: 20) {

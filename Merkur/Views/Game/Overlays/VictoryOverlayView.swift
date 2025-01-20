@@ -17,7 +17,7 @@ struct VictoryOverlayView: View {
     @State private var isAnimating = false
     
     var body: some View {
-        Color.black.opacity(0.7)
+        Color.green.opacity(0.5)
             .ignoresSafeArea()
             .overlay {
                 ZStack {
@@ -26,8 +26,8 @@ struct VictoryOverlayView: View {
                         .frame(maxWidth: 400, maxHeight: 350)
                         .overlay(alignment: .top) {
                             Text("VICTORY!")
-                                .mFont(16)
-                                .padding(.top, 5)
+                                .mFont(18)
+                                .offset(y: 35)
                         }
                         .overlay(alignment: .topTrailing) {
                             if let achievement = achievement {
@@ -55,7 +55,7 @@ struct VictoryOverlayView: View {
                             
                             HStack {
                                 Text("SCORE:")
-                                    .mFont(20)
+                                    .mFont(18)
                                 
                                 HStack {
                                     Text("+\(coins)")

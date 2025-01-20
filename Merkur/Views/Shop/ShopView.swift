@@ -15,7 +15,7 @@ struct ShopView: View {
     
     var body: some View {
         ZStack {
-            MainBGView(isShop: true)
+            MainBGView()
                 
             VStack {
                 HStack {

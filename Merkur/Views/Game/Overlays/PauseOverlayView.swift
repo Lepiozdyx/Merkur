@@ -12,7 +12,7 @@ struct PauseOverlayView: View {
     let onExit: () -> Void
     
     var body: some View {
-        Color.black.opacity(0.3)
+        Color.black.opacity(0.5)
             .ignoresSafeArea()
             .overlay {
                 ZStack {
@@ -21,8 +21,8 @@ struct PauseOverlayView: View {
                         .frame(maxWidth: 400, maxHeight: 350)
                         .overlay(alignment: .top) {
                             Text("PAUSE")
-                                .mFont(16)
-                                .padding(.top, 5)
+                                .mFont(18)
+                                .offset(y: 35)
                         }
                     
                     VStack(spacing: 20) {

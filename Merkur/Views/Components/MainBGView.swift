@@ -9,28 +9,15 @@ import SwiftUI
 
 struct MainBGView: View {
     var isGamefield = false
-    var isShop = false
     
     var body: some View {
-        Image(isShop ? .bgShop : .bg)
+        Image(.bg)
             .resizable()
             .overlay(alignment: .bottom) {
                 if isGamefield {
-                    VStack(spacing: 40) {
-                        HStack {
-                            Image(.sun)
-                                .resizable()
-                                .frame(width: 90, height: 90)
-                                .shadow(color: .yellow, radius: 3)
-                                .opacity(0.8)
-                            Spacer()
-                        }
-                        .padding(90)
-                        
-                        Image(.earth)
-                            .resizable()
-                            .frame(width: .infinity, height: 70)
-                    }
+                    Image(.earth)
+                        .resizable()
+                        .frame(width: .infinity, height: 70)
                 }
             }
             .ignoresSafeArea()

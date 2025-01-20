@@ -28,14 +28,14 @@ struct HealthBarView: View {
             .overlay(alignment: .leading) {
                 // Health bar
                 Rectangle()
-                    .frame(width: currentHealthBarWidth, height: height/2.6)
+                    .frame(width: currentHealthBarWidth, height: height/1.4)
                     .foregroundStyle(.pink)
                     .shadow(
                         color: isDamaged ? .red : .pink,
                         radius: isDamaged ? 6 : 2
                     )
                     .opacity(isDamaged ? 0.9 : 0.8)
-                    .offset(x: 53)
+                    .offset(x: 40)
                     .animation(.easeInOut(duration: 0.3), value: currentHealthBarWidth)
             }
             .onChange(of: currentHealth) { newHealth in
@@ -56,5 +56,5 @@ struct HealthBarView: View {
 }
 
 #Preview {
-    HealthBarView(width: 180, height: 50, healthBarWidth: 100, currentHealth: 80)
+    HealthBarView(width: 150, height: 35, healthBarWidth: 100, currentHealth: 100)
 }
