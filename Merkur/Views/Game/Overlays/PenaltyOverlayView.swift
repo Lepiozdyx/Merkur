@@ -10,14 +10,19 @@ import SwiftUI
 struct PenaltyOverlayView: View {
     var body: some View {
         ZStack {
-            Color.red.opacity(0.1).ignoresSafeArea()
+            Color.red
+                .opacity(0.1)
+                .ignoresSafeArea()
             
-            Text("You destroy human rocket! 5 second penalty")
-                .mFont(20)
-                .multilineTextAlignment(.center)
-                .padding()
-                .background(Color.red.opacity(0.3))
-                .cornerRadius(10)
+            VStack(spacing: 20) {
+                Text("WRONG TARGET!")
+                    .mFont(24)
+                
+                Text("weapons system reboot...")
+                    .mFont(24)
+            }
+            .padding()
+            .border(.white, width: 2)
         }
     }
 }

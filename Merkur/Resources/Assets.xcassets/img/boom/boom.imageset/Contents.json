@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "bgShop.png",
+      "filename" : "boom.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "bgShop@2x.png",
+      "filename" : "boom@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "bgShop@3x.png",
+      "filename" : "boom@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

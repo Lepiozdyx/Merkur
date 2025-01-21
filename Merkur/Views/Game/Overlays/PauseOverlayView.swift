@@ -12,7 +12,8 @@ struct PauseOverlayView: View {
     let onExit: () -> Void
     
     var body: some View {
-        Color.black.opacity(0.5)
+        Color.black
+            .opacity(0.5)
             .ignoresSafeArea()
             .overlay {
                 ZStack {

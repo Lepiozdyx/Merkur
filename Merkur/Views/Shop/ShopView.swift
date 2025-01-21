@@ -16,7 +16,8 @@ struct ShopView: View {
     var body: some View {
         ZStack {
             MainBGView()
-                
+                .blur(radius: 10, opaque: true)
+            
             VStack {
                 HStack {
                     MenuButtonView {

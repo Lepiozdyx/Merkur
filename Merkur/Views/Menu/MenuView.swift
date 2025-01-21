@@ -10,10 +10,6 @@ import SwiftUI
 struct MenuView: View {
     @StateObject private var vm = MenuViewModel()
     
-    @Environment(\.verticalSizeClass) var verticalSizeClass
-    var isPortrait: Bool { verticalSizeClass == .regular }
-    var isIPhone: Bool { UIDevice.current.userInterfaceIdiom == .phone }
-    
     var body: some View {
         NavigationView {
             ZStack(alignment: .top) {
@@ -33,12 +29,6 @@ struct MenuView: View {
                 VStack(spacing: 10) {
                     Spacer()
                     Spacer()
-                    
-                    // Orientation message
-                    if isPortrait && isIPhone {
-                        Text("Tip: Play in landscape screen orientation")
-                            .mFont(14)
-                    }
                     
                     // Menu buttons
                     HStack(spacing: 20) {

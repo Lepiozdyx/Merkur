@@ -14,6 +14,7 @@ struct SettingsView: View {
     var body: some View {
         ZStack {
             MainBGView()
+                .blur(radius: 10, opaque: true)
             
             VStack {
                 HStack {
@@ -34,6 +35,7 @@ struct SettingsView: View {
                         .mFont(18)
                         .offset(y: 35)
                 }
+                .padding()
             
             VStack(spacing: 20) {
                 ToggleButtonView(name: "SOUNDS", isOn: vm.isSoundEnabled) {

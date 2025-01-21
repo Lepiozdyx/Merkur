@@ -33,7 +33,7 @@ struct VictoryOverlayView: View {
                             if let achievement = achievement {
                                 Image(achievement.type.image)
                                     .resizable()
-                                    .frame(width: 250, height: 190)
+                                    .frame(width: 160, height: 120)
                                     .shadow(color: .yellow, radius: isAnimating ? 14 : 8)
                                     .scaleEffect(isAnimating ? 1 : 0.98)
                                     .animation(
@@ -41,7 +41,7 @@ struct VictoryOverlayView: View {
                                         .repeatForever(autoreverses: true),
                                         value: isAnimating
                                     )
-                                    .offset(x: 120)
+                                    .offset(x: 20, y: -15)
                                     .onAppear {
                                         isAnimating.toggle()
                                     }

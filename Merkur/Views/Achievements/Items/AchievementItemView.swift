@@ -16,7 +16,7 @@ struct AchievementItemView: View {
             .aspectRatio(contentMode: .fit)
             .frame(height: 250)
             .blur(radius: achievement.isUnlocked ? 0 : 5)
-            .overlay {
+            .overlay(alignment: .topTrailing) {
                 if !achievement.isUnlocked {
                     VStack {
                         Image(systemName: "lock.shield.fill")
@@ -27,7 +27,7 @@ struct AchievementItemView: View {
                         Text("LOCKED")
                             .mFont(12)
                     }
-                    .offset(y: 15)
+                    .offset(x: -20)
                 }
             }
             .shadow(

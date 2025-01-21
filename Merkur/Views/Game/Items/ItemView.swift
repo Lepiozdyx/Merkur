@@ -11,37 +11,72 @@ struct ItemView: View {
     let item: GameItem
     let screenHeight: CGFloat
     let currentRound: Int
+    let isPenalty: Bool
     let onTap: () -> Void
     let onFall: () -> Void
     
     @State private var offset: CGFloat = 0
     @State private var hasFallen = false
+    @State private var showExplosion = false
+    @State private var explosionOpacity = 0.0
+    @State private var itemOpacity = 1.0
     
     var body: some View {
-        Image(item.type.image)
-            .resizable()
-            .frame(width: Constants.Screen.itemSize, height: Constants.Screen.itemSize * 1.1)
-            .position(x: item.position.x, y: item.position.y + offset)
-            .opacity(item.isEnabled ? 1 : 0)
-            .onTapGesture {
-                guard item.isEnabled else { return }
-                playItemSound()
-                onTap()
-            }
-            .onAppear {
-                let fallingDuration = Constants.Rounds.getFallingDuration(for: currentRound)
-                
-                withAnimation(.linear(duration: fallingDuration)) {
-                    offset = screenHeight + Constants.Screen.itemSize * 2
+        ZStack {
+            // Item
+            Image(item.type.image)
+                .resizable()
+                .frame(width: Constants.Screen.itemSize, height: Constants.Screen.itemSize * 1.1)
+                .opacity(item.isEnabled ? itemOpacity : 0)
+                .onTapGesture {
+                    guard item.isEnabled && !isPenalty else { return }
+                    handleTap()
                 }
-                
-                DispatchQueue.main.asyncAfter(deadline: .now() + fallingDuration) {
-                    if !hasFallen && item.isEnabled {
-                        hasFallen = true
-                        onFall()
-                    }
-                }
+            
+            // Explosion effect
+            Image(.boom)
+                .resizable()
+                .frame(width: Constants.Screen.itemSize * 1.2, height: Constants.Screen.itemSize * 1.2)
+                .opacity(explosionOpacity)
+        }
+        .position(x: item.position.x, y: item.position.y + offset)
+        .onAppear {
+            startFallingAnimation()
+        }
+    }
+    
+    private func handleTap() {
+        playItemSound()
+        
+        // Показываем взрыв
+        showExplosion = true
+        withAnimation(.easeIn(duration: 0.1)) {
+            explosionOpacity = 1.0
+            itemOpacity = 0.0
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            withAnimation(.easeOut(duration: 0.2)) {
+                explosionOpacity = 0.0
             }
+        }
+        
+        onTap()
+    }
+    
+    private func startFallingAnimation() {
+        let fallingDuration = Constants.Rounds.getFallingDuration(for: currentRound)
+        
+        withAnimation(.linear(duration: fallingDuration)) {
+            offset = screenHeight + Constants.Screen.itemSize * 2
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + fallingDuration) {
+            if !hasFallen && item.isEnabled {
+                hasFallen = true
+                onFall()
+            }
+        }
     }
     
     private func playItemSound() {

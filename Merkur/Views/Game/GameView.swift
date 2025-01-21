@@ -174,6 +174,7 @@ struct GameView: View {
                     item: item,
                     screenHeight: geometry.size.height,
                     currentRound: vm.currentRound,
+                    isPenalty: vm.isPenalty,
                     onTap: {
                         vm.tapItem(item)
                     },
