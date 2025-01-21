@@ -9,27 +9,27 @@ import Foundation
 
 final class SettingsManager {
     private enum Keys: String {
-        case isSoundEnabled
-        case isMusicEnabled
+        case sound
+        case music
     }
     
     static let shared = SettingsManager()
     
     var isSoundEnabled: Bool {
-        get { UserDefaults.standard.bool(forKey: Keys.isSoundEnabled.rawValue) }
-        set { UserDefaults.standard.set(newValue, forKey: Keys.isSoundEnabled.rawValue) }
+        get { UserDefaults.standard.bool(forKey: Keys.sound.rawValue) }
+        set { UserDefaults.standard.set(newValue, forKey: Keys.sound.rawValue) }
     }
     
     var isMusicEnabled: Bool {
-        get { UserDefaults.standard.bool(forKey: Keys.isMusicEnabled.rawValue) }
-        set { UserDefaults.standard.set(newValue, forKey: Keys.isMusicEnabled.rawValue) }
+        get { UserDefaults.standard.bool(forKey: Keys.music.rawValue) }
+        set { UserDefaults.standard.set(newValue, forKey: Keys.music.rawValue) }
     }
     
     private init() {
-        if UserDefaults.standard.object(forKey: Keys.isSoundEnabled.rawValue) == nil {
+        if UserDefaults.standard.object(forKey: Keys.sound.rawValue) == nil {
             isSoundEnabled = true
         }
-        if UserDefaults.standard.object(forKey: Keys.isMusicEnabled.rawValue) == nil {
+        if UserDefaults.standard.object(forKey: Keys.music.rawValue) == nil {
             isMusicEnabled = true
         }
     }

@@ -7,12 +7,6 @@
 
 import Foundation
 
-enum AppState {
-    case loading
-    case webView
-    case mainMenu
-}
-
 @MainActor
 final class ContentViewModel: ObservableObject {
     @Published private(set) var appState: AppState = .loading
@@ -28,7 +22,7 @@ final class ContentViewModel: ObservableObject {
         self.webManager = webManager
     }
     
-    func onAppear() {
+    func appStateCheck() {
         Task {
             if webManager.provenURL != nil {
                 appState = .webView
