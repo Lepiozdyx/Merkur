@@ -11,7 +11,7 @@ struct ItemView: View {
     let item: GameItem
     let screenHeight: CGFloat
     let currentRound: Int
-    let isPenalty: Bool
+    let isTimeShiftActive: Bool
     let onTap: () -> Void
     let onFall: () -> Void
     
@@ -29,7 +29,7 @@ struct ItemView: View {
                 .frame(width: Constants.Screen.itemSize, height: Constants.Screen.itemSize * 1.1)
                 .opacity(item.isEnabled ? itemOpacity : 0)
                 .onTapGesture {
-                    guard item.isEnabled && !isPenalty else { return }
+                    guard item.isEnabled else { return }
                     handleTap()
                 }
             
@@ -48,7 +48,6 @@ struct ItemView: View {
     private func handleTap() {
         playItemSound()
         
-        // Показываем взрыв
         showExplosion = true
         withAnimation(.easeIn(duration: 0.1)) {
             explosionOpacity = 1.0
@@ -65,7 +64,10 @@ struct ItemView: View {
     }
     
     private func startFallingAnimation() {
-        let fallingDuration = Constants.Rounds.getFallingDuration(for: currentRound)
+        let fallingDuration = Constants.Rounds.getFallingDuration(
+            for: currentRound,
+            withTimeShift: isTimeShiftActive
+        )
         
         withAnimation(.linear(duration: fallingDuration)) {
             offset = screenHeight + Constants.Screen.itemSize * 2

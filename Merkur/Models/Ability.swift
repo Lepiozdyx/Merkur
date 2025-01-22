@@ -10,13 +10,13 @@ import Foundation
 enum AbilityType: String, CaseIterable, Codable {
     case shield
     case meteorDestruction
-    case penaltyCancel
+    case timeShift
     
     var price: Int {
         switch self {
         case .shield: return Constants.Shop.shieldPrice
         case .meteorDestruction: return Constants.Shop.meteorDestructionPrice
-        case .penaltyCancel: return Constants.Shop.penaltyCancelPrice
+        case .timeShift: return Constants.Shop.timeShiftPrice
         }
     }
     
@@ -24,7 +24,7 @@ enum AbilityType: String, CaseIterable, Codable {
         switch self {
         case .shield: return .shield
         case .meteorDestruction: return .destroyer
-        case .penaltyCancel: return .time
+        case .timeShift: return .time
         }
     }
     
@@ -32,7 +32,7 @@ enum AbilityType: String, CaseIterable, Codable {
         switch self {
         case .shield: return "SHIELD"
         case .meteorDestruction: return "METEOR DESTROYER"
-        case .penaltyCancel: return "PENALTY CANCEL"
+        case .timeShift: return "TIME SHIFT"
         }
     }
     
@@ -42,8 +42,8 @@ enum AbilityType: String, CaseIterable, Codable {
             return "5-second Planetary Shield"
         case .meteorDestruction:
             return "Destroy all meteors on screen"
-        case .penaltyCancel:
-            return "Instantly remove penalty timer"
+        case .timeShift:
+            return "Activate time shift mode"
         }
     }
 }

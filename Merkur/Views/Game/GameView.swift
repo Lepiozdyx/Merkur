@@ -174,12 +174,12 @@ struct GameView: View {
                     item: item,
                     screenHeight: geometry.size.height,
                     currentRound: vm.currentRound,
-                    isPenalty: vm.isPenalty,
+                    isTimeShiftActive: vm.isTimeShiftActive,
                     onTap: {
-                        vm.tapItem(item)
+                        vm.pickItem(item)
                     },
                     onFall: {
-                        vm.handleItemFall(item)
+                        vm.handleItemDrop(item)
                     }
                 )
             }
@@ -193,16 +193,9 @@ struct GameView: View {
                     .transition(.opacity.animation(.easeInOut(duration: 0.3)))
             }
             
-            // MARK: Penalty Overlay
-            if vm.isPenalty {
-                Color.black.opacity(0.3)
-                    .ignoresSafeArea()
-                    .transition(.opacity)
-                    .allowsHitTesting(false)
-                
-                PenaltyOverlayView()
-                    .transition(.scale)
-                    .allowsHitTesting(false)
+            // MARK: Time Shift Overlay
+            if vm.isTimeShiftActive {
+                TimeShiftOverlayView()
             }
         }
     }

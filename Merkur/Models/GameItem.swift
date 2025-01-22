@@ -33,6 +33,25 @@ enum GameItemType {
         self == .coin
     }
     
+    var isRocket: Bool {
+        self == .rocket
+    }
+    
+    var damage: Double {
+        switch self {
+        case .redMeteor, .blueMeteor:
+            return Constants.Play.meteorDamage
+        case .rocket:
+            return Constants.Play.rocketDamage
+        default:
+            return 0
+        }
+    }
+    
+    var shouldDamageHealth: Bool {
+        isMeteor || isRocket
+    }
+    
     static var randomItem: GameItemType {
         let types: [GameItemType] = [.rocket, .redMeteor, .blueMeteor]
         return types.randomElement() ?? .redMeteor
@@ -46,6 +65,6 @@ struct GameItem: Identifiable {
     var isEnabled: Bool = true
     
     var shouldDamageHealth: Bool {
-        isEnabled && type.isMeteor
+        isEnabled && type.shouldDamageHealth
     }
 }

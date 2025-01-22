@@ -14,7 +14,6 @@ final class GameViewModel: ObservableObject {
     @Published private(set) var items: [GameItem] = []
     @Published private(set) var gameState: GameState = .initial
     @Published private(set) var timeRemaining: TimeInterval = Constants.Play.gamePlayDuration
-    @Published private(set) var isPenalty = false
     @Published private(set) var score = 0
     @Published private(set) var health: Double = Constants.Play.initialHealth
     @Published private(set) var currentRound = 1
@@ -23,10 +22,10 @@ final class GameViewModel: ObservableObject {
     // MARK: - Abilities Properties
     @Published private(set) var abilities: [Ability] = []
     @Published private(set) var isShieldActive = false
+    @Published private(set) var isTimeShiftActive = false
     
     // MARK: - Private Properties
     private var gameStateManager: GameStateManagerProtocol
-    private var penaltyTimer: AnyCancellable?
     private var itemGenerationTimer: AnyCancellable?
     private var shieldTimer: AnyCancellable?
     private var cancellables = Set<AnyCancellable>()
@@ -73,9 +72,8 @@ final class GameViewModel: ObservableObject {
         items.removeAll()
         score = 0
         health = Constants.Play.initialHealth
-        isPenalty = false
         isShieldActive = false
-        penaltyTimer?.cancel()
+        isTimeShiftActive = false
         shieldTimer?.cancel()
         itemGenerationTimer?.cancel()
         loadAbilities()
@@ -129,9 +127,8 @@ final class GameViewModel: ObservableObject {
     }
     
     // MARK: - Game Items Methods
-    func tapItem(_ item: GameItem) {
+    func pickItem(_ item: GameItem) {
         guard case .playing = gameState,
-              !isPenalty,
               item.isEnabled else { return }
         
         if let index = items.firstIndex(where: { $0.id == item.id }) {
@@ -141,23 +138,21 @@ final class GameViewModel: ObservableObject {
                 score += 1
                 updateUserData()
                 updatedItem.isEnabled = false
-            } else if item.type.isMeteor {
+            } else if item.type.shouldDamageHealth {
                 updatedItem.isEnabled = false
-            } else if item.type == .rocket {
-                activatePenalty()
             }
             
             items[index] = updatedItem
         }
     }
     
-    func handleItemFall(_ item: GameItem) {
+    func handleItemDrop(_ item: GameItem) {
         guard case .playing = gameState else { return }
         
         if let index = items.firstIndex(where: { $0.id == item.id }) {
             if items[index].isEnabled {
                 if item.shouldDamageHealth && !isShieldActive {
-                    applyDamage()
+                    applyDamage(amount: item.type.damage)
                 }
                 items[index].isEnabled = false
             }
@@ -198,8 +193,8 @@ final class GameViewModel: ObservableObject {
             activateShield()
         case .meteorDestruction:
             destroyAllMeteors()
-        case .penaltyCancel:
-            cancelPenalty()
+        case .timeShift:
+            activateTimeShift()
         }
     }
     
@@ -265,16 +260,6 @@ final class GameViewModel: ObservableObject {
         items.append(item)
     }
     
-    private func activatePenalty() {
-        isPenalty = true
-        penaltyTimer = Timer.publish(every: Constants.Play.penaltyDuration, on: .main, in: .common)
-            .autoconnect()
-            .first()
-            .sink { [weak self] _ in
-                self?.isPenalty = false
-            }
-    }
-    
     private func activateShield() {
         isShieldActive = true
         shieldTimer?.cancel()
@@ -293,6 +278,15 @@ final class GameViewModel: ObservableObject {
             }
     }
     
+    private func activateTimeShift() {
+        isTimeShiftActive = true
+        if let index = abilities.firstIndex(where: { $0.type == .timeShift }) {
+            var ability = abilities[index]
+            ability.isActive = true
+            abilities[index] = ability
+        }
+    }
+    
     private func destroyAllMeteors() {
         items = items.map { item in
             var updatedItem = item
@@ -309,19 +303,8 @@ final class GameViewModel: ObservableObject {
         }
     }
     
-    private func cancelPenalty() {
-        isPenalty = false
-        penaltyTimer?.cancel()
-        
-        if let index = abilities.firstIndex(where: { $0.type == .penaltyCancel }) {
-            var ability = abilities[index]
-            ability.isActive = false
-            abilities[index] = ability
-        }
-    }
-    
-    private func applyDamage() {
-        health = max(0, health - Constants.Play.meteorDamage)
+    private func applyDamage(amount: Double) {
+        health = max(0, health - amount)
         
         if health <= 0 {
             stopGame()
@@ -331,9 +314,7 @@ final class GameViewModel: ObservableObject {
     
     private func stopGame() {
         itemGenerationTimer?.cancel()
-        penaltyTimer?.cancel()
         shieldTimer?.cancel()
-        isPenalty = false
     }
     
     private func updateUserData() {

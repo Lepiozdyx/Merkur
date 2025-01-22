@@ -11,10 +11,11 @@ enum Constants {
     enum Play {
         static let countdownDuration = 2
         static let gamePlayDuration: TimeInterval = 30
-        static let penaltyDuration: TimeInterval = 5
         static let coinsDroppingChance = 10
         static let initialHealth: Double = 100
         static let meteorDamage: Double = 20
+        static let rocketDamage: Double = 10
+        static let timeShiftMultiplier: Double = 0.6
     }
     
     enum Rounds {
@@ -27,9 +28,10 @@ enum Constants {
         static let speedMultiplier: [Double] = [1.0, 1.2, 1.4, 1.6, 1.8]
         static let itemsMultiplier: [Double] = [1.0, 1.3, 1.6, 1.9, 2.2]
         
-        static func getFallingDuration(for round: Int) -> TimeInterval {
+        static func getFallingDuration(for round: Int, withTimeShift: Bool = false) -> TimeInterval {
             let roundIndex = max(0, min(round - 1, maxRounds - 1))
-            return itemFallingDuration / speedMultiplier[roundIndex]
+            let duration = itemFallingDuration / speedMultiplier[roundIndex]
+            return withTimeShift ? duration / Constants.Play.timeShiftMultiplier : duration
         }
         
         static func getGenerationPeriod(for round: Int) -> TimeInterval {
@@ -44,9 +46,9 @@ enum Constants {
     }
     
     enum Shop {
-        static let shieldPrice = 50
-        static let meteorDestructionPrice = 75
-        static let penaltyCancelPrice = 35
+        static let shieldPrice = 35
+        static let meteorDestructionPrice = 50
+        static let timeShiftPrice = 65
     }
     
     enum Screen {
