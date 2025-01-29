@@ -15,8 +15,8 @@ workflows:
         vars:
           XCODE_PROJECT: "Merkur.xcodeproj" # <-- Put the name of your workspace here.
           XCODE_SCHEME: "Merkur" # <-- Put the name of your scheme here.
-          BUNDLE_ID: "com.merkurgames.online" # <-- Put your Bundle Id here.
-          APP_STORE_APPLE_ID: 6739778391 # <-- Put the app id number here. This is found in App Store Connect > App > General > App Information
+          BUNDLE_ID: "com.merkurgames.app" # <-- Put your Bundle Id here.
+          APP_STORE_APPLE_ID: 6741146795 # <-- Put the app id number here. This is found in App Store Connect > App > General > App Information
         xcode: latest # <-- set to specific version e.g. 14.3, 15.0 to avoid unexpected updates.
         cocoapods: default
       triggering:
